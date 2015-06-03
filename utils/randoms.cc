@@ -27,6 +27,7 @@ int Reservoir(FILE *fin, std::vector<std::string> *pool, int nsample,
       }
     }
   }
+  free(line);
   return 1;
 }
 int Reservoir(FILE *fin, FILE *fout, int nsample, int maxline) {
