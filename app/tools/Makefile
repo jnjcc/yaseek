@@ -3,9 +3,12 @@
 
 PRJROOT = ../..
 UTILS = $(PRJROOT)/utils
+CSTRUCT = $(PRJROOT)/cstruct
 
 OPTS ?= -g -O0
 CXXFLAGS += -I$(PRJROOT) $(OPTS)
+LDFLAGS += -L$(CSTRUCT)/darray/lib
+LDLIBS += -ldarray
 
 SOURCES = $(wildcard *.cc)
 APPS = $(SOURCES:.cc=)
