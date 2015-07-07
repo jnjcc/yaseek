@@ -4,6 +4,7 @@
 HADOOP_BIN="/path/to/hadoop"
 HADOOP_PYTHON_PATH="hdfs://path/to/python.tar.gz"
 
+HADOOP_MEM_LIMIT=2048
 HADOOP_MAP_CAPACITY=500
 HADOOP_MAP_TASKS=500
 HADOOP_MAP_FAIL_PERCNT=10
@@ -25,6 +26,7 @@ hadoop_run() {
     $HADOOP_BIN streaming \
         -D mapred.job.priority='NORMAL' \
         -D mapred.job.name=${JOBNAME} \
+        -D stream.memory.limit=${HADOOP_MEM_LIMIT} \
         -D mapred.job.map.capacity=${HADOOP_MAP_CAPACITY} \
         -D mapred.map.over.capacity.allowed=false \
         -D mapred.job.map.tasks=${HADOOP_MAP_TASKS} \
