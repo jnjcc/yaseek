@@ -11,6 +11,7 @@ HADOOP_REDUCE_CAPACITY=500
 HADOOP_REDUCE_TASKS=500
 HADOOP_REDUCE_FAIL_PERCNT=10
 
+## hadoop job with python mapper, the template
 hadoop_run() {
     if [ $# -lt 4 ]; then
         echo "Usage: hadoop_run JOBNAME INPUTDIR OUTPUTDIR MAPDIR"
@@ -39,4 +40,21 @@ hadoop_run() {
         -output "${OUDIR}" \
         -file "${MAPDIR}" \
         -cacheArchive "${HADOOP_PYTHON_PATH}#python"
+}
+
+HADOOP_DISTCP_SPEED=30000
+HADOOP_DISTCP_MAPS=500
+hadoop_copy() {
+    if [ $# -lt 4 ]; then
+        echo "Usage: hadoop_copy SRC_UGI DST_UGI SRC_HDFS DST_HDFS"
+        return
+    fi
+
+    SUGI="$1"; DUGI="$2"; SHDFS="$3"; DHDFS="$4"
+
+    $HADOOP_BIN distcp \
+        -D distcp.map.speed.kb=${HADOOP_DISTCP_SPEED} \
+        -m ${HADOOP_DISTCP_MAPS} \
+        -su ${SUGI} -du ${DUGI} \
+        "${SHDFS}" "${DHDFS}"
 }
