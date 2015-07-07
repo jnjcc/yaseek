@@ -392,7 +392,7 @@ int ddel(darray *pvda, uint32_t idx) {
     return 0;
 }
 
-int dsave(const darray *pvda, FILE *fout) {
+static int dsave_in(const darray *pvda, FILE *fout) {
     const darray_t *pda = (const darray_t *)pvda;
     int sze = 0;
     if (pda == NULL || pda->pdbuf_ == NULL || fout == NULL) {
@@ -413,7 +413,18 @@ int dsave(const darray *pvda, FILE *fout) {
     return sze;
 }
 
-darray *dload(FILE *fin) {
+int dsave(const darray *pda, const char *fpath) {
+    FILE *fout = fopen(fpath, "wb");
+    if (fout == NULL) {
+        return 0;
+    } else {
+        int ret = dsave_in(pda, fout);
+        fclose(fout);
+        return ret;
+    }
+}
+
+static darray *dload_in(FILE *fin) {
     darray_t *dret = NULL;
     if (fin == NULL) {
         return dret;
@@ -431,6 +442,17 @@ darray *dload(FILE *fin) {
     }
 
     return dret;
+}
+
+darray *dload(const char *fpath) {
+    FILE *fin = fopen(fpath, "rb");
+    if (fin == NULL) {
+        return NULL;
+    } else {
+        darray *ret = dload_in(fin);
+        fclose(fin);
+        return ret;
+    }
 }
 
 void dwalk(const darray *pvda, void (*visit)(const void *, uint32_t)) {

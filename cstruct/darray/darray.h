@@ -38,8 +38,8 @@ int dsets(darray *pda, uint32_t idx, const void *psrc, uint32_t sze);
 int dadd(darray *pda, uint32_t idx, const void *psrc, uint32_t sze);
 int ddel(darray *pda, uint32_t idx);
 
-int dsave(const darray *pda, FILE *fout);
-darray *dload(FILE *fin);
+int dsave(const darray *pda, const char *fpath);
+darray *dload(const char *fpath);
 
 void dwalk(const darray *pda, void (*visit)(const void *, uint32_t));
 
