@@ -23,8 +23,8 @@ void dtfree(datrie *pdt);
 uint32_t dtsize(const datrie *pdt);
 int dtadd(datrie *pdt, const char *word, const void *wextra, uint32_t exlen);
 
-int dtsave(const datrie *pdt, FILE *fout);
-datrie *dtload(FILE *fin);
+int dtsave(const datrie *pdt, const char *fpath);
+datrie *dtload(const char *fpath);
 
 int dtbuild(datrie *pdt);
 int dtfind(const datrie *pdt, const char *key, void *pval, uint32_t maxsz);
