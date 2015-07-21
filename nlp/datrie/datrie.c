@@ -92,3 +92,15 @@ int dtadd(datrie *pvdt, const char *word, const void *wextra, uint32_t exlen) {
     }
     return ret;
 }
+
+int dtbuild(datrie *pvdt) {
+    if (build_raw_trie(pvdt)) {
+        return build_dtrie(pvdt);
+    } else {
+        return 0;
+    }
+}
+
+int dtfind(const datrie *pvdt, const char *key, void *pval, uint32_t maxsz) {
+    return find_dtrie(pvdt, key, pval, maxsz);
+}
