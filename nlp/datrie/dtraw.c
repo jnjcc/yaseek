@@ -184,7 +184,7 @@ int find_raw_trie(const datrie *pvdt, const char *word) {
     uint32_t lvlidx = 0;
     while (widx < wlen) {
         wchar_t curchr = wstr[widx++];
-        dget(pord_tree, curlvl, &pcsibs, sizeof(sibling_t *));
+        dget(pord_tree, curlvl, &pcsibs, sizeof(siblings *));
         if (pcsibs) {
             nxtlvl = find_sib(pcsibs, curchr, pdt->code_maps_, &lvlidx);
             if (nxtlvl != -1) {
