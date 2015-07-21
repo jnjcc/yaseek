@@ -5,87 +5,6 @@
 
 // raw trie generation
 
-static siblings *init_sibs(uint32_t nsibs) {
-    return dslloc(nsibs * sizeof(sibling_t), sizeof(sibling_t));
-}
-
-const sibling_t *get_sib(const siblings *psibs, int id) {
-    return (const sibling_t *)dgetp(psibs, id);
-}
-
-static int add_sib(siblings *psibs, int id, wchar_t code, uint8_t leaf,
-        int chld) {
-    if (psibs == NULL || id < 0) {
-        return 0;
-    }
-    sibling_t *sib = (sibling_t *)malloc(sizeof(sibling_t));
-    sib->ccode_ = code;
-    sib->leaf_ = leaf;
-    sib->chld_ = chld;
-    return dadd(psibs, id, (const void *)sib, sizeof(*sib));
-}
-
-static int mark_sib_leaf(siblings *psibs, int id) {
-    sibling_t *pnode = (sibling_t *)dgetp(psibs, id);
-    pnode->leaf_ = 1;
-    return 1;
-}
-
-static int find_sib(const siblings *psibs, wchar_t code, uint32_t *codemap,
-        uint32_t *idx) {
-    if (psibs == NULL || codemap == NULL || idx == NULL) {
-        return 0;
-    }
-    uint32_t cmap = codemap[code];
-    sibling_t *psb = NULL;
-
-    psb = (sibling_t *)dgetp(psibs, 0);
-    if (cmap == codemap[psb->ccode_]) {
-        *idx = 0;
-        return psb->chld_;
-    } else if (cmap < codemap[psb->ccode_]) {
-        *idx = 0;
-        return -1;
-    } else {
-        int n = (int)dsize(psibs) - 1;
-        if (n > 0) {
-            psb = (sibling_t *)dgetp(psibs, n);
-            if (cmap == codemap[psb->ccode_]) {
-                *idx = n;
-                return psb->chld_;
-            } else if (cmap > codemap[psb->ccode_]) {
-                *idx = (n + 1);
-                return -1;
-            }
-        } else {
-            *idx = 1;
-            return -1;
-        }
-    }
-
-    int l = 1, r = (int)dsize(psibs) - 2, m = 0;
-    while (l <= r) {
-        m = l + (r - l) / 2;
-        psb = (sibling_t *)dgetp(psibs, m);
-        if (cmap == codemap[psb->ccode_]) {
-            *idx = m;
-            return psb->chld_;
-        } else if (cmap < codemap[psb->ccode_]) {
-            r = m - 1;
-        } else {
-            l = m + 1;
-        }
-    }
-
-    psb = (sibling_t *)dgetp(psibs, m);
-    if (cmap < codemap[psb->ccode_]) {
-        *idx = m;
-    } else {
-        *idx = (m + 1);
-    }
-    return -1;
-}
-
 static void sort_words(datrie_t *pdt) {
     int nwords = 0, nuniq = 0;
     int *idxs = dhsorti(pdt->pwarry_, &nwords, wstrcmp);
@@ -177,7 +96,7 @@ static int build_ord_trie(datrie_t *pdt) {
                 nxtlvl = find_sib(pcsibs, curchr, pdt->code_maps_, &lvlidx);
                 if (nxtlvl != -1) {
                     if (!(*pcurwd)) {  // end of word
-                        mark_sib_leaf(pcsibs, lvlidx);
+                        pcsibs->sibs_[lvlidx].leaf_ = 1;
                         break;
                     } else {
                         curlvl = nxtlvl;
