@@ -8,8 +8,8 @@ NLP = $(PRJROOT)/nlp
 
 OPTS ?= -g -O0
 CXXFLAGS += -I$(PRJROOT) $(OPTS)
-LDFLAGS += -L$(CSTRUCT)/darray/lib -L$(NLP)/datrie/lib
-LDLIBS += -ldatrie -ldarray
+LDFLAGS += -L$(CSTRUCT)/darray/lib -L$(NLP)/datrie/lib -L$(CSTRUCT)/cmemory/lib
+LDLIBS += -ldatrie -lcmem -ldarray
 
 SOURCES = $(wildcard *.cc)
 APPS = $(SOURCES:.cc=)
