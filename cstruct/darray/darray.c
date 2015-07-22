@@ -223,7 +223,7 @@ int dget(const darray *pvda, uint32_t idx, void *pdest, uint32_t maxsz) {
             break;
         default:
             off = pda->pem_pos_[idx];
-            elen = pda->pem_pos_[idx];
+            elen = pda->pem_sze_[idx];
             break;
     }
     szcpy = (elen > maxsz) ? maxsz : elen;
