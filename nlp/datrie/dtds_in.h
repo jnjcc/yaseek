@@ -32,7 +32,9 @@ typedef struct {
     uint32_t word_num_;
 
     darray *pextra_;  // extra info for unsorted words
-    darray *peidxs_;  // n-th word => index in PEXTRA
+    darray *peidxs_;  // (sorted) n-th word => index in PEXTRA
+    darray *pn2wid_;  // leaf Node => n-th Word InDex
+                      //   the index is the node's child's level in ORD_TREE_
 
     // Ordered tree, the raw trie tree
     ordtree *ord_tree_;

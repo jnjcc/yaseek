@@ -73,6 +73,7 @@ static int build_ord_trie(datrie_t *pdt) {
 
     uint32_t widx = 0;  // word indx
     uint32_t totword = 0;
+    const uint32_t NON_WORD = 0;
     while (widx < dsize(pdt->pwarry_)) {
         const wchar_t *pcurwd = (const wchar_t *)dgetp(pdt->pwarry_, widx);
 
@@ -97,6 +98,9 @@ static int build_ord_trie(datrie_t *pdt) {
                 if (nxtlvl != -1) {
                     if (!(*pcurwd)) {  // end of word
                         pcsibs->sibs_[lvlidx].leaf_ = 1;
+                        ++totword;
+                        // NOTICE: impossible...
+                        dset(pdt->pn2wid_, curlvl, &totword, sizeof(totword));
                         break;
                     } else {
                         curlvl = nxtlvl;
@@ -106,7 +110,9 @@ static int build_ord_trie(datrie_t *pdt) {
                     add_sib(pcsibs, lvlidx, curchr, leaf, totlvl);
                     if (leaf) {
                         ++totword;
+                        dpush(pdt->pn2wid_, &totword, sizeof(totword));
                     } else {
+                        dpush(pdt->pn2wid_, &NON_WORD, sizeof(NON_WORD));
                     }
 
                     curlvl = totlvl;
@@ -135,7 +141,9 @@ static int build_ord_trie(datrie_t *pdt) {
             add_sib(pcsibs, 0, curchr, leaf, totlvl);
             if (leaf) {
                 ++totword;
+                dpush(pdt->pn2wid_, &totword, sizeof(totword));
             } else {
+                dpush(pdt->pn2wid_, &NON_WORD, sizeof(NON_WORD));
             }
 
             curlvl = totlvl;
@@ -154,6 +162,10 @@ static int build_ord_trie(datrie_t *pdt) {
     }
     pdt->cdmap_sze_ = totmchr + 1;
 
+    if (!dpush(pdt->pn2wid_, &NON_WORD, sizeof(NON_WORD))) {
+        return 0;
+    }
+
     dfree(pdt->pwarry_);
     pdt->pwarry_ = NULL;
     return 1;
@@ -165,8 +177,10 @@ int build_raw_trie(datrie *pvdt) {
     pdt->cdmap_sze_ = CODE_MAP_SIZE;
     pdt->code_maps_ = (uint32_t *)calloc(CODE_MAP_SIZE, sizeof(uint32_t));
     pdt->ord_tree_ = dslloc(sizeof(siblings *) * 1024, sizeof(siblings *));
+    pdt->pn2wid_ = dslloc(sizeof(uint32_t) * 1024, sizeof(uint32_t));
 
-    if (pdt->code_maps_ == NULL || pdt->ord_tree_ == NULL) {
+    if (pdt->code_maps_ == NULL || pdt->ord_tree_ == NULL ||
+        pdt->pn2wid_ == NULL) {
         return 0;
     }
 
@@ -174,7 +188,8 @@ int build_raw_trie(datrie *pvdt) {
     return build_ord_trie(pdt);
 }
 
-int find_raw_trie(const datrie *pvdt, const char *word) {
+int get_raw_trie(const datrie *pvdt, const char *word, void *extra,
+        uint32_t maxsz) {
     datrie_t *pdt = (datrie_t *)pvdt;
     int wlen = 0, widx = 0;
     wchar_t *wstr = dec_word(word, ENC_UTF8, &wlen);
@@ -197,8 +212,20 @@ int find_raw_trie(const datrie *pvdt, const char *word) {
         }
     }
     if (wlen > 0 && widx == wlen) {
+        if (extra != NULL) {
+            uint32_t widx;
+            // the index is the child's level in ord_tree_, a.k.a, NXTLVL
+            dget(pdt->pn2wid_, nxtlvl - 1, &widx, sizeof(widx));
+            uint32_t eidx;
+            dget(pdt->peidxs_, widx - 1, &eidx, sizeof(eidx));
+            dget(pdt->pextra_, eidx, extra, maxsz);
+        }
         return 1;
     } else {
         return 0;
     }
+}
+
+int find_raw_trie(const datrie *pdt, const char *word) {
+    return get_raw_trie(pdt, word, NULL, 0);
 }
