@@ -30,6 +30,7 @@ int dtbuild(datrie *pdt);
 int dtfind(const datrie *pdt, const char *key, void *pval, uint32_t maxsz);
 
 int build_raw_trie(datrie *pdt);
+int get_raw_trie(const datrie *pdt, const char *word, void *extra, uint32_t sz);
 int find_raw_trie(const datrie *pdt, const char *word);
 
 #ifdef __cplusplus
