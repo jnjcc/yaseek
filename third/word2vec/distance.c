@@ -15,7 +15,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <malloc.h>
+#ifdef __APPLE__
+ #include <sys/malloc.h>
+ #include <stdlib.h>
+#else
+ #include <malloc.h>
+#endif
 
 const long long max_size = 2000;         // max length of strings
 const long long N = 40;                  // number of closest words that will be shown
@@ -28,7 +33,6 @@ int main(int argc, char **argv) {
   char file_name[max_size], st[100][max_size];
   float dist, len, bestd[N], vec[max_size];
   long long words, size, a, b, c, d, cn, bi[100];
-  char ch;
   float *M;
   char *vocab;
   if (argc < 2) {
