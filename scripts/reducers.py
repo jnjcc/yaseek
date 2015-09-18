@@ -3,6 +3,26 @@
 
 ### Hadoop reducer programs
 
+## word counter the template
+def wordcounter(fin):
+    lastword = ""
+    lastfreq = 0
+    for line in fin:
+        items = line.strip("\n").split("\t")
+        if len(items) < 2:
+            continue
+        curword = items[0]
+        curfreq = int(items[1])
+        if curword == lastword:
+            lastfreq += curfreq
+        else:
+            if len(lastword) > 0:
+                print lastword + "\t" + str(lastfreq)
+            lastword = curword
+            lastfreq = curfreq
+    if len(lastword) > 0:
+        print lastword + "\t" + str(lastfreq)
+
 ## By default, this class implements the word count reducer
 ## Usage: inherit this class, override:
 ##   GETKEY, GETVALUE, COLLECT, or RESET, __STR__ if necessary
