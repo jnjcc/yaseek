@@ -23,6 +23,7 @@ int split2d(const char *line, const char *sep, char *item2d, int maxitems,
 
 // split by SEP _characters_
 // NOTICE: will modify LINE; thread-unsafe due to strtok()
+// NOTICE: will discard empty parts, e.g. "a\t\tb" => {"a", "b"}
 int tokenize(char *line, const char *delim, char **items, int maxitems);
 
 // string equivalent of is* functions for char
